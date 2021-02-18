@@ -1,64 +1,103 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MaterialApp(home: PositionedTiles()));
 
-class MyApp extends StatelessWidget {
+class PositionedTiles extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  State<StatefulWidget> createState() => PositionedTilesState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class PositionedTilesState extends State<PositionedTiles> {
+  List<Widget> tiles = [
+    StatelessColorfulTile(),
+    StatelessColorfulTile(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
+      body: Row(children: tiles),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: Icon(Icons.sentiment_very_satisfied),
+        onPressed: swapTiles,
       ),
     );
+  }
+
+  swapTiles() {
+    setState(() {
+      tiles.insert(1, tiles.removeAt(0));
+    });
+  }
+}
+
+class StatelessColorfulTile extends StatelessWidget {
+  final Color myColor = UniqueColorGenerator.getColor();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: myColor,
+      child: Padding(padding: const EdgeInsets.all(70.0)),
+    );
+  }
+}
+
+class StatefulColorfulTile extends StatefulWidget {
+  final key;
+
+  const StatefulColorfulTile({this.key}) : super(key: key);
+
+  @override
+  ColorfulTileState createState() => ColorfulTileState();
+}
+
+class ColorfulTileState extends State<StatefulColorfulTile> {
+  Color myColor;
+
+  @override
+  void initState() {
+    super.initState();
+    myColor = UniqueColorGenerator.getColor();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: myColor,
+      child: Padding(
+        padding: const EdgeInsets.all(70.0),
+      ),
+    );
+  }
+}
+
+class UniqueColorGenerator {
+  static List colorOptions = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.purple,
+    Colors.orange,
+    Colors.indigo,
+    Colors.amber,
+    Colors.black,
+  ];
+  static Random random = Random();
+
+  static Color getColor() {
+    if (colorOptions.length > 0) {
+      return colorOptions.removeAt(random.nextInt(colorOptions.length));
+    } else {
+      return Color.fromARGB(
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+      );
+    }
   }
 }
